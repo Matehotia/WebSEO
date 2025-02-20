@@ -1,0 +1,16 @@
+Options +FollowSymlinks
+RewriteEngine on
+
+# Règle pour les articles
+RewriteRule ^pages/article-([_a-z0-9]*).html$ pages/modules.php?id=$1 [L]
+
+# Règle pour le formulaire
+RewriteRule ^nouveau-article\.html$ index.php?action=create [L,QSA]
+
+# Règle pour l'enregistrement
+RewriteRule ^enregistrer-article$ index.php?action=store [L,QSA]
+
+# Règle par défaut
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

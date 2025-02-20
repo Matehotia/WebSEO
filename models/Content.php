@@ -40,4 +40,39 @@ class Content {
             return false;
         }
     }
+
+    public function getContent($id) {
+        try {
+            $query = "SELECT * FROM contents WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Erreur de lecture : " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function getAllContents() {
+        try {
+            $query = "SELECT * FROM contents ORDER BY id DESC";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Erreur de lecture : " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function getNextId() {
+        try {
+            $query = "SELECT AUTO_INCREMENT FROM information_schema.TABLES 
+                     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contents'";
+            $stmt = $this->db->query($query);
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            return 1; // En cas d'erreur, retourne 1
+        }
+    }
 }
