@@ -21,12 +21,6 @@
                                 <?php echo $content['formatted_content']; ?>
                             </div>
                             <hr>
-                            <!-- <div class="mt-3">
-                                <h4>URL associée :</h4>
-                                <a href="<?php echo htmlspecialchars($content['url']); ?>" target="_blank">
-                                    <?php echo htmlspecialchars($content['url']); ?>
-                                </a>
-                            </div> -->
                         <?php else: ?>
                             <p>Aucun contenu trouvé.</p>
                         <?php endif; ?>

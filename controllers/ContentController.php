@@ -2,7 +2,7 @@
 require_once 'models/Content.php';
 
 class ContentController {
-    private $model; 
+    private $model;
 
     public function __construct() {
         $this->model = new Content();
@@ -17,40 +17,43 @@ class ContentController {
     }
 
     public function store() {
-        // recupere les donnees du formulaire 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = $_POST['title'] ?? '';
             $content = $_POST['content'] ?? '';
-            $url = $_POST['url'] ?? '';
             
             // Formatage du contenu
-            $formatted_content = $this->formatContent($title, $content);
+            $formatted_content = "<h1>" . htmlspecialchars($title) . "</h1>\n<p>" . htmlspecialchars($content) . "</p>";
             
-            //Sauvegarde dans la BD via le modèle
-            $result = $this->model->insert([
+            $id = $this->model->insert([
                 'title' => $title,
                 'content' => $content,
-                'url' => $url,
+                'url' => 'article-' . $this->model->getNextId() . '.html',
                 'formatted_content' => $formatted_content
             ]);
 
-            if ($result) {
-                // Rediriger vers la page d'affichage
-                header('Location: index.php?action=show');
-                exit;
-            } else {
-                header('Location: index.php?error=1');
+            // Redirection vers l'article créé
+            if ($id) {
+                header('Location: /S6Web/REFERENCEMENT%20NATUREL/Test/pages/article-' . $id . '.html');
                 exit;
             }
         }
     }
 
-    public function show() {
-        $content = $this->model->getLastContent();
-        require_once 'views/content/show.php';
-    }
-
-    private function formatContent($title, $content) {
-        return "<h1>" . htmlspecialchars($title) . "</h1>\n<p>" . htmlspecialchars($content) . "</p>";
+    private function createSlug($text) {
+        // Convertit en minuscules
+        $text = strtolower($text);
+        
+        // Remplace les caractères spéciaux et les accents
+        $text = str_replace(
+            array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ'),
+            array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y'),
+            $text
+        );
+        
+        // Remplace tout ce qui n'est pas lettre ou chiffre par un tiret
+        $text = preg_replace('/[^a-z0-9_]+/', '-', $text);
+        
+        // Supprime les tirets en début et fin
+        return trim($text, '-');
     }
 }
